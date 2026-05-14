@@ -122,11 +122,6 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Review Mode Banner */}
-      <div className="bg-amber-500 text-white text-center py-1.5 text-[10px] font-bold uppercase tracking-widest sticky top-0 z-[60] shadow-sm">
-        Review Version — Auto-Submission Active
-      </div>
-
       {/* Offline Alert (Fixes Heuristic #9) */}
       {isOffline && (
         <div className="bg-red-600 text-white text-center py-2 text-sm font-bold sticky top-0 z-50 animate-pulse">
