@@ -1,0 +1,14 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+@theme {
+  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+}
+
+:root {
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
