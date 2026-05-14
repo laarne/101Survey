@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useReview, TaskResult } from "../../../contexts/ReviewContext";
 import { usabilityTasks } from "../../../data/reviewData";
-import { Play, CheckCircle, XCircle, HelpCircle, Clock, MousePointerClick } from "lucide-react";
+import { Play, CheckCircle, XCircle, HelpCircle, Clock, MousePointerClick, ChevronDown, ChevronUp } from "lucide-react";
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -14,6 +14,7 @@ export function TaskCard() {
   const [taskTime, setTaskTime] = useState(0);
   const [notes, setNotes] = useState("");
   const [selectedResult, setSelectedResult] = useState<TaskResult>(null);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const taskIndex = state.usabilityCurrentTask;
   const isActive = state.usabilityTaskActive;
@@ -47,130 +48,105 @@ export function TaskCard() {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-[9988] w-[360px]">
-      <div
-        className="rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
-        style={{
-          background: "rgba(2, 44, 34, 0.95)",
-          backdropFilter: "blur(20px)",
-        }}
+    <div 
+      className={`fixed bottom-24 right-4 z-[9995] flex flex-col bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+        isMinimized ? "h-14 w-64" : "h-auto w-80"
+      }`}
+    >
+      {/* Header */}
+      <div 
+        className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 cursor-pointer bg-gray-50/50 dark:bg-gray-800/50 rounded-t-2xl"
+        onClick={() => setIsMinimized(!isMinimized)}
       >
-        {/* Header */}
-        <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-          <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-            Task {taskIndex + 1} of 10
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 rounded-lg ${isActive ? "bg-red-500 animate-pulse" : "bg-green-600"} flex items-center justify-center text-white text-[10px] font-bold`}>
+            {taskIndex + 1}
+          </div>
+          <span className="text-sm font-bold text-gray-900 dark:text-white">
+            Task {taskIndex + 1}
           </span>
-          {isActive && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-xs text-red-400 font-medium">Recording</span>
-            </div>
-          )}
         </div>
+        <button className="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500">
+          {isMinimized ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+      </div>
 
-        {/* Task description */}
-        <div className="px-5 pb-3">
-          <p className="text-white font-semibold text-sm leading-relaxed">
+      {!isMinimized && (
+        <div className="p-5 space-y-4">
+          <p className="text-[11px] text-gray-700 dark:text-gray-300 font-medium leading-relaxed italic">
             "{task?.description}"
           </p>
-        </div>
 
-        {/* Metrics */}
-        {isActive && (
-          <div className="px-5 pb-3 flex gap-3">
-            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 flex-1">
-              <Clock size={14} className="text-emerald-400" />
-              <span className="text-white font-mono text-sm font-bold">{formatTime(taskTime)}</span>
-              <span className="text-white/40 text-[10px]">sec</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 flex-1">
-              <MousePointerClick size={14} className="text-emerald-400" />
-              <span className="text-white font-mono text-sm font-bold">
-                {state.metrics.totalClicks}
-              </span>
-              <span className="text-white/40 text-[10px]">clicks</span>
-            </div>
-          </div>
-        )}
-
-        {/* Controls */}
-        <div className="px-5 pb-4">
-          {!isActive ? (
-            <button
-              onClick={handleStart}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
-            >
-              <Play size={16} />
-              Start Task
-            </button>
-          ) : (
-            <div className="space-y-3">
-              {/* Result buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setSelectedResult("pass")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all border-2 ${
-                    selectedResult === "pass"
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-white/5 text-white/70 border-white/10 hover:border-green-400"
-                  }`}
-                >
-                  <CheckCircle size={14} /> Pass
-                </button>
-                <button
-                  onClick={() => setSelectedResult("fail")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all border-2 ${
-                    selectedResult === "fail"
-                      ? "bg-red-500 text-white border-red-500"
-                      : "bg-white/5 text-white/70 border-white/10 hover:border-red-400"
-                  }`}
-                >
-                  <XCircle size={14} /> Fail
-                </button>
-                <button
-                  onClick={() => setSelectedResult("assist")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all border-2 ${
-                    selectedResult === "assist"
-                      ? "bg-amber-500 text-white border-amber-500"
-                      : "bg-white/5 text-white/70 border-white/10 hover:border-amber-400"
-                  }`}
-                >
-                  <HelpCircle size={14} /> Assist
-                </button>
+          {isActive && (
+            <div className="flex gap-2">
+              <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg px-2 py-1.5 flex-1 border border-gray-100 dark:border-gray-700">
+                <Clock size={12} className="text-red-500" />
+                <span className="text-xs font-mono font-bold text-gray-900 dark:text-white">{formatTime(taskTime)}</span>
               </div>
-
-              {/* Notes */}
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Think-aloud observation notes..."
-                rows={2}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-white/10 text-white placeholder-white/30 border border-white/10 focus:border-emerald-400 outline-none resize-none"
-              />
-
-              {/* Complete */}
-              <button
-                onClick={handleComplete}
-                disabled={selectedResult === null}
-                className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  selectedResult !== null
-                    ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                    : "bg-white/10 text-white/30 cursor-not-allowed"
-                }`}
-              >
-                Complete Task →
-              </button>
+              <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg px-2 py-1.5 flex-1 border border-gray-100 dark:border-gray-700">
+                <MousePointerClick size={12} className="text-blue-500" />
+                <span className="text-xs font-mono font-bold text-gray-900 dark:text-white">{state.metrics.totalClicks}</span>
+              </div>
             </div>
           )}
-        </div>
 
-        {/* Result legend */}
-        <div className="px-5 pb-3 text-[10px] text-white/30 space-y-0.5">
-          <div>• <b>Pass:</b> Completed without help</div>
-          <div>• <b>Fail:</b> Could not complete / gave up</div>
-          <div>• <b>Assist:</b> Completed only after the observer gave a hint</div>
+          <div className="space-y-3">
+            {!isActive ? (
+              <button
+                onClick={handleStart}
+                className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg"
+              >
+                <Play size={14} /> Start Task
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setSelectedResult("pass")}
+                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                      selectedResult === "pass" ? "bg-green-600 text-white border-green-600" : "bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    Pass
+                  </button>
+                  <button
+                    onClick={() => setSelectedResult("fail")}
+                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                      selectedResult === "fail" ? "bg-red-600 text-white border-red-600" : "bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    Fail
+                  </button>
+                  <button
+                    onClick={() => setSelectedResult("assist")}
+                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                      selectedResult === "assist" ? "bg-amber-500 text-white border-amber-500" : "bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    Assist
+                  </button>
+                </div>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Observations..."
+                  rows={2}
+                  className="w-full px-3 py-2 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 resize-none outline-none"
+                />
+                <button
+                  onClick={handleComplete}
+                  disabled={selectedResult === null}
+                  className={`w-full py-2 rounded-lg text-xs font-bold transition-all ${
+                    selectedResult !== null ? "bg-green-600 text-white shadow-md" : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                  }`}
+                >
+                  Complete Task
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
