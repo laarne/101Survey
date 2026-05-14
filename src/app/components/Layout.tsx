@@ -7,6 +7,7 @@ import { SUSForm } from "./review/usability/SUSForm";
 import { QualitativeForm } from "./review/usability/QualitativeForm";
 import { AccessibilityFlow } from "./review/accessibility/AccessibilityFlow";
 import { ReviewSummary } from "./review/ReviewSummary";
+import { ReviewSetupHub } from "./review/ReviewSetupHub";
 import {
   Home,
   Calendar,
@@ -88,6 +89,7 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showReviewSetup, setShowReviewSetup] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const { theme, toggleTheme } = useTheme();
   const { state: reviewState, recordClick, recordPageChange } = useReview();
@@ -347,6 +349,23 @@ export function Layout() {
       <QualitativeForm />
       <AccessibilityFlow />
       <ReviewSummary />
+
+      {/* Floating Start Button (Visible if idle) */}
+      {reviewState.phase === "idle" && (
+        <button
+          onClick={() => setShowReviewSetup(true)}
+          className="fixed bottom-6 right-6 z-[9990] flex items-center gap-2 px-5 py-3 bg-emerald-600 text-white font-bold text-sm rounded-full shadow-2xl hover:bg-emerald-500 hover:scale-105 transition-all animate-bounce"
+          style={{ animationDuration: "3s" }}
+        >
+          <ClipboardCheck size={18} />
+          Start Peer Review
+        </button>
+      )}
+
+      {/* Review Setup Dialog */}
+      {showReviewSetup && (
+        <ReviewSetupHub onClose={() => setShowReviewSetup(false)} />
+      )}
     </div>
   );
 }
