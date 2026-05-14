@@ -14,7 +14,7 @@ import { ReviewSetupHub } from "./review/ReviewSetupHub";
 export function Login() {
   const [userType, setUserType] = useState("student");
   const [showReviewSetup, setShowReviewSetup] = useState(false);
-  const isReviewMode = typeof window !== "undefined" && window.location.search.includes("review=true");
+  const isReviewMode = true; // Review Mode is now active by default for this dedicated site
   const navigate = useNavigate();
   return (
     <div 
