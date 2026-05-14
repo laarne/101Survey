@@ -202,7 +202,6 @@ interface ReviewContextValue {
   // Submission
   submitReview: (html: string) => Promise<void>;
 }
-}
 
 const ReviewContext = createContext<ReviewContextValue | null>(null);
 
